@@ -13,6 +13,7 @@ Get list of aws profiles configured on local machine:
 ```
 
 I use aws profile `mfa` to get aws sts token. Then I put sts token to AWS profile `default`
+
 Get sts token.
 ```
 ./get_token_using_mfa.py
