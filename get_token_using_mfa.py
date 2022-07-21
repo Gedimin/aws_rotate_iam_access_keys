@@ -41,19 +41,16 @@ def _write_aws_credentials(aws_access_key_id, aws_secret_access_key, aws_session
     """Writes AccessKeyId, SecretAccessKey, SessionToken to $HOME/.aws/credentials file to default profile"""
     config = configparser.ConfigParser()
     config.read(aws_credentials_file)
-    if 'default' in config:
-        config['default']['aws_access_key_id'] = aws_access_key_id
-        config['default']['aws_secret_access_key'] = aws_secret_access_key
-        config['default']['aws_session_token'] = aws_session_token
-        with open(aws_credentials_file, 'w') as configfile:
-            config.write(configfile)
-    else:
-        config = configparser.ConfigParser()
-        config['default'] = {'aws_access_key_id': aws_access_key_id,
-                            'aws_secret_access_key': aws_secret_access_key,
-                            'aws_session_token': aws_secret_access_key}
-        with open(aws_credentials_file, 'a') as configfile:
-            config.write(configfile)
+
+    if 'default' not in config:
+        config.add_section('default')
+
+    config['default']['aws_access_key_id'] = aws_access_key_id
+    config['default']['aws_secret_access_key'] = aws_secret_access_key
+    config['default']['aws_session_token'] = aws_session_token
+
+    with open(aws_credentials_file, 'w') as configfile:
+        config.write(configfile)
 
     print('AWS config has been updated successfully')
 
