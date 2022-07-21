@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 import os
+import sys
 import configparser
 from subprocess import Popen, PIPE
 import shlex
@@ -15,12 +16,17 @@ def _get_sts_token_response():
     mfa_code = str(input('Enter CODE from MFA device:'))
     command = f'aws sts get-session-token --serial-number {mfa_arn} --token-code {mfa_code} --profile {aws_profile}'
     args = shlex.split(command)
-    process = Popen(args, stdout=PIPE)
-    output, err = process.communicate()
-    exit_code = process.wait()
-    if err is not None or exit_code != 0:
-        print('ERROR')
-    return output
+    try:
+        process = Popen(args, stdout=PIPE)
+        output, err = process.communicate()
+        exit_code = process.wait()
+        if err is not None or exit_code != 0:
+            print(f'ERROR executing command: {command}')
+        return output
+    except FileNotFoundError as e:
+        print(f'{e}\nCheck if awscli is installed')
+        sys.exit(65)
+
 
 def _parse_aws_response(sts_token_response):
     """Parses response of command getting aws sts token"""
