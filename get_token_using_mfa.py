@@ -13,7 +13,7 @@ def _get_sts_token_response():
     """Returns response of command getting aws sts token"""
     mfa_arn = '' # put here ARN of your MFA Devicce
     aws_profile = 'mfa' # put here your value of aws profile to get token
-    mfa_code = str(input('Enter CODE from MFA device:'))
+    mfa_code = str(input('Enter CODE from MFA device: '))
     command = f'aws sts get-session-token --serial-number {mfa_arn} --token-code {mfa_code} --profile {aws_profile}'
     args = shlex.split(command)
     try:
@@ -39,14 +39,22 @@ def _parse_aws_response(sts_token_response):
 
 def _write_aws_credentials(aws_access_key_id, aws_secret_access_key, aws_session_token):
     """Writes AccessKeyId, SecretAccessKey, SessionToken to $HOME/.aws/credentials file to default profile"""
-    aws_credentials_file = os.environ['HOME'] + '/.aws/credentials'
     config = configparser.ConfigParser()
     config.read(aws_credentials_file)
-    config['default']['aws_access_key_id'] = aws_access_key_id
-    config['default']['aws_secret_access_key'] = aws_secret_access_key
-    config['default']['aws_session_token'] = aws_session_token
-    with open(aws_credentials_file, 'w') as configfile:
-        config.write(configfile)
+    if 'default' in config:
+        config['default']['aws_access_key_id'] = aws_access_key_id
+        config['default']['aws_secret_access_key'] = aws_secret_access_key
+        config['default']['aws_session_token'] = aws_session_token
+        with open(aws_credentials_file, 'w') as configfile:
+            config.write(configfile)
+    else:
+        config = configparser.ConfigParser()
+        config['default'] = {'aws_access_key_id': aws_access_key_id,
+                            'aws_secret_access_key': aws_secret_access_key,
+                            'aws_session_token': aws_secret_access_key}
+        with open(aws_credentials_file, 'a') as configfile:
+            config.write(configfile)
+
     print('AWS config has been updated successfully')
 
 def get_sts_token():
@@ -63,4 +71,8 @@ def get_sts_token():
 
 
 if __name__ == '__main__':
-    get_sts_token()
+    aws_credentials_file = os.environ['HOME'] + '/.aws/credentials'
+    if os.path.exists(aws_credentials_file):
+        get_sts_token()
+    else:
+        print(f'File {aws_credentials_file} does not exist')
