@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+"""
+Important! This script rewrites default profile in aws credentials file. 
+Please make sure that you configured your AWS AccessKey in other profile (e.g. mfa)
+"""
+
+
 import os
 import sys
 import configparser
-from subprocess import Popen, PIPE
 import shlex
 import json
+from subprocess import Popen, PIPE
 
 
 def _get_sts_token_response():
@@ -26,7 +32,6 @@ def _get_sts_token_response():
     except FileNotFoundError as e:
         print(f'{e}\nCheck if awscli is installed')
         sys.exit(65)
-
 
 def _parse_aws_response(sts_token_response):
     """Parses response of command getting aws sts token"""

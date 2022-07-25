@@ -14,6 +14,8 @@ Get list of aws profiles configured on local machine:
 
 I use aws profile `mfa` to get aws sts token. Then I put sts token to AWS profile `default`
 
+Important! This script rewrites default profile in aws credentials file. Please make sure that you configured your AWS AccessKey in other profile (e.g. mfa)
+
 Get sts token.
 ```
 ./get_token_using_mfa.py
