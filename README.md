@@ -35,3 +35,8 @@ Delete access key
 ```
 ./delete_access_key.py
 ```
+
+Get STS token using AWS SSO
+```
+./get_token_using_aws_sso.py
+```
